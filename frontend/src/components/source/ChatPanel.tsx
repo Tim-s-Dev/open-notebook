@@ -7,7 +7,8 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
-import { Bot, User, Send, Loader2, FileText, Lightbulb, StickyNote, Clock } from 'lucide-react'
+import { Bot, User, Send, Loader2, FileText, Lightbulb, StickyNote, Clock, Maximize2, Minimize2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import {
@@ -79,6 +80,7 @@ export function ChatPanel({
   const chatInputId = useId()
   const [input, setInput] = useState('')
   const [sessionManagerOpen, setSessionManagerOpen] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { openModal } = useModalManager()
@@ -100,6 +102,24 @@ export function ChatPanel({
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // Fullscreen reading mode: lock body scroll + exit on Escape
+  useEffect(() => {
+    if (!isFullscreen) return
+
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsFullscreen(false)
+    }
+    document.addEventListener('keydown', handleEsc)
+
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.removeEventListener('keydown', handleEsc)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [isFullscreen])
 
   const handleSend = () => {
     if (input.trim() && !isStreaming) {
@@ -125,13 +145,32 @@ export function ChatPanel({
 
   return (
     <>
-    <Card className="flex flex-col h-full flex-1 overflow-hidden">
+    <Card
+      className={cn(
+        'flex flex-col overflow-hidden',
+        isFullscreen
+          ? 'fixed inset-0 z-50 h-screen w-screen rounded-none border-0'
+          : 'h-full flex-1'
+      )}
+      style={isFullscreen ? { paddingTop: 'env(safe-area-inset-top)' } : undefined}
+    >
       <CardHeader className="pb-3 flex-shrink-0">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Bot className="h-5 w-5" />
             {title || (contextType === 'source' ? t('chat.chatWith').replace('{name}', t('navigation.sources')) : t('chat.chatWith').replace('{name}', t('common.notebook')))}
           </CardTitle>
+          <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => setIsFullscreen((v) => !v)}
+            aria-label={isFullscreen ? t('common.minimize') : t('common.fullscreen')}
+            title={isFullscreen ? t('common.minimize') : t('common.fullscreen')}
+          >
+            {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+          </Button>
           {onSelectSession && onCreateSession && onDeleteSession && (
             <Dialog open={sessionManagerOpen} onOpenChange={setSessionManagerOpen}>
               <Button
@@ -161,11 +200,12 @@ export function ChatPanel({
               </DialogContent>
             </Dialog>
           )}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col min-h-0 p-0">
         <ScrollArea className="flex-1 min-h-0 px-4" ref={scrollAreaRef}>
-          <div className="space-y-4 py-4">
+          <div className={cn('space-y-4 py-4', isFullscreen && 'mx-auto w-full max-w-3xl')}>
             {messages.length === 0 ? (
               <div className="text-center text-muted-foreground py-8">
                 <Bot className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -277,7 +317,7 @@ export function ChatPanel({
         )}
 
         {/* Input Area */}
-        <div className="flex-shrink-0 p-4 space-y-3 border-t">
+        <div className={cn('flex-shrink-0 p-4 space-y-3 border-t', isFullscreen && 'mx-auto w-full max-w-3xl')}>
           {/* Model selector */}
           {onModelChange && (
             <div className="flex items-center justify-between">

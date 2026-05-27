@@ -86,6 +86,8 @@ export const enUS = {
     saveToNote: "Save to note",
     copyToClipboard: "Copy to clipboard",
     close: "Close",
+    fullscreen: "Fullscreen",
+    minimize: "Exit fullscreen",
     insights: "Insights",
     progress: "Progress",
     deleting: "Deleting...",
