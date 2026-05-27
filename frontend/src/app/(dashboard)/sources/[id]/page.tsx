@@ -27,22 +27,23 @@ export default function SourceDetailPage() {
   return (
     <div className="flex flex-col h-screen">
       {/* Back button */}
-      <div className="pt-6 pb-4 px-6">
+      <div className="pt-4 pb-2 px-4 sm:pt-6 sm:pb-4 sm:px-6">
         <Button
           variant="ghost"
           size="sm"
           onClick={handleBack}
-          className="mb-4"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           {navigation.getReturnLabel()}
         </Button>
       </div>
 
-      {/* Main content: Source detail + Chat */}
-      <div className="flex-1 grid gap-6 lg:grid-cols-[2fr_1fr] overflow-hidden px-6">
+      {/* Main content: Source detail + Chat.
+          Mobile: single column, page scrolls, chat gets a usable min height (expandable to fullscreen).
+          Desktop: fixed split with each pane scrolling independently. */}
+      <div className="flex-1 grid gap-4 sm:gap-6 px-4 sm:px-6 overflow-y-auto lg:overflow-hidden lg:grid-cols-[2fr_1fr]">
         {/* Left column - Source detail */}
-        <div className="overflow-y-auto px-4 pb-6">
+        <div className="px-0 sm:px-4 pb-6 lg:overflow-y-auto">
           <SourceDetailContent
             sourceId={sourceId}
             showChatButton={false}
@@ -51,7 +52,7 @@ export default function SourceDetailPage() {
         </div>
 
         {/* Right column - Chat */}
-        <div className="overflow-y-auto px-4 pb-6">
+        <div className="px-0 sm:px-4 pb-6 min-h-[70vh] lg:min-h-0 lg:overflow-y-auto">
           <ChatPanel
             messages={chat.messages}
             isStreaming={chat.isStreaming}

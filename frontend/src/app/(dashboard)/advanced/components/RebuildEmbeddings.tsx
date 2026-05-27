@@ -272,7 +272,7 @@ export function RebuildEmbeddings() {
             )}
 
              {stats && (
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">{t('navigation.sources')}</p>
                   <p className="text-2xl font-bold">{sourcesProcessed}</p>
