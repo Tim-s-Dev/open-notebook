@@ -149,7 +149,7 @@ export function ChatPanel({
       className={cn(
         'flex flex-col overflow-hidden',
         isFullscreen
-          ? 'fixed inset-0 z-50 h-screen w-screen rounded-none border-0'
+          ? 'fixed inset-0 z-50 max-h-[100dvh] rounded-none border-0 bg-background'
           : 'h-full flex-1'
       )}
       style={isFullscreen ? { paddingTop: 'env(safe-area-inset-top)' } : undefined}
@@ -317,7 +317,7 @@ export function ChatPanel({
         )}
 
         {/* Input Area */}
-        <div className={cn('flex-shrink-0 p-4 space-y-3 border-t', isFullscreen && 'mx-auto w-full max-w-3xl')}>
+        <div className={cn('flex-shrink-0 p-4 space-y-3 border-t', isFullscreen && 'mx-auto w-full max-w-3xl pb-[max(1rem,env(safe-area-inset-bottom))]')}>
           {/* Model selector */}
           {onModelChange && (
             <div className="flex items-center justify-between">

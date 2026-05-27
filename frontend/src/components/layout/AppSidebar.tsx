@@ -43,7 +43,7 @@ import {
   Command,
 } from 'lucide-react'
 
-const getNavigation = (t: TFunction) => [
+export const getNavigation = (t: TFunction) => [
   {
     title: t('navigation.collect'),
     items: [
